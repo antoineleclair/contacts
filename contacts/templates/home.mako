@@ -6,14 +6,16 @@
 
 <p>Blah blah blah</p>
 
+<div id="contact-wrap"></div>
+
 <%text>
-    <script type="text/template" id="contact-list-item">
+    <script type="text/template" id="tmpl-contact-list-item">
         <div class="name"><%= user.get('name') %></div>
         <div class="email"><%= user.get('email') %></div>
         <span class="destroy"></span>
     </script>
 
-    <script type="text/template" id="contact-form">
+    <script type="text/template" id="tmpl-contact-form">
         <label class="name">
             Name
             <input type="text" name="name" value="<%= user.get('name') %>">

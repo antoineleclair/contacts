@@ -14,7 +14,7 @@ window.ContactList = Backbone.Collection.extend({
 window.ContactListView = Backbone.View.extend({
     tagName: 'li',
 
-    template: _.template($('#contact-list-item').html()),
+    template: _.template($('#tmpl-contact-list-item').html()),
 
     model: Contact,
 
@@ -27,18 +27,29 @@ window.ContactListView = Backbone.View.extend({
 });
 
 window.AppView = Backbone.View.extend({
-    $el: $('#contact-app'),
+    $el: $('#tmpl-contact-app'),
 
     initialize: function() {
-        // @todo
-    },
+        //debugger
+        var contact_form = new ContactFormView({
+            model: new Contact(),
+            el : $('#contact-wrap')
+        });
+        contact_form.render();
+    }
 });
 
 window.ContactFormView = Backbone.View.extend({
-    $el: $('#contact-form'),
+    template: _.template($('#tmpl-contact-form').html()),
+    render: function(){
+        var html = this.template({ user: this.model });
+        $(this.el).html(html);
+        return this;
+    },
 
     initialize: function() {
-    },
+       
+    }
 });
-
+window.App = new AppView();
 });
