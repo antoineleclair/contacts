@@ -4,8 +4,6 @@
     <h1>Contacts</h1>
 </div>
 
-<p>Blah blah blah</p>
-
 <div id="contact-wrap"></div>
 
 <%text>
@@ -16,15 +14,23 @@
     </script>
 
     <script type="text/template" id="tmpl-contact-form">
-        <label class="name">
-            Name
-            <input type="text" name="name" value="<%= user.get('name') %>">
-        </label>
-        <label>
-            Email
-            <input type="email" name="email" value="<%= user.get('email') %>">
-        </label>
-        <a href="#">Cancel</a>
-        <input type="submit" value="Save">
+        <form action="" method="post" class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="contact-name">Name</label>
+                <div class="controls">
+                    <input type="text" name="name" value="<%= user.get('name') %>" id="contact_name">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="contact-email">Email</label>
+                <div class="controls">
+                    <input type="email" name="email" value="<%= user.get('email') %>">
+                </div>
+            </div>
+            <div class="form-actions">
+                <input type="submit" value="Save" class="btn btn-primary">            
+                <a href="#">Cancel</a>
+            </div>
+        </form>
     </script>
 </%text>

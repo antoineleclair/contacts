@@ -47,7 +47,6 @@ def update_contact(request):
 def delete_contact(request):
     object_id = ObjectId(request.matchdict['id'])
     contact = request.db['contacts'].find_one(object_id)
-    print contact
     if contact is None:
         return status_code_response(404)
     request.db['contacts'].remove(object_id)
