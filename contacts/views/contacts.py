@@ -1,7 +1,8 @@
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPOk
-import json
+from pyramid.response import Response
+from pyramid.url import route_url
 from bson.objectid import ObjectId
+
 
 @view_config(route_name='contacts', request_method='GET',
             accept='application/json', renderer='json')
@@ -12,10 +13,12 @@ def list_contacts(request):
 @view_config(route_name='contacts', request_method='POST',
             accept='application/json', renderer='json')
 def add_contacts(request):
-    contact = json.loads(request.body)
+    contact = request.json_body
     request.db['contacts'].insert(contact)
-    response = HTTPOk()
-    response.headers['Location'] = '/contacts/%s' % contact.id
+    print contact
+    response = status_code_response(200)
+    response.headers['Location'] = route_url('contact',
+                                    id=contact['_id'], request=request)
     return response
 
 @view_config(route_name='contact', request_method='GET',
@@ -24,7 +27,7 @@ def get_contact(request):
     query = {'_id': ObjectId(request.matchdict['id'])}
     contact = request.db['contacts'].find_one(query)
     if contact is None:
-        return HTTPNotFound()
+        return status_code_response(404)
     return contact
 
 @view_config(route_name='contacts', request_method='PUT',
@@ -33,19 +36,27 @@ def update_contact(request):
     query = {'_id': ObjectId(request.matchdict['id'])}
     contact = request.db['contacts'].find_one(query)
     if contact is None:
-        return HTTPNotFound()
-    update = json.loads(request.body)
+        return status_code_response(404)
+    update = request.json_body
     for key in update: contact[key] = update[key]
     request.db['contacts'].update(contact)
-    return HTTPOk()
+    return status_code_response(200)
     
 @view_config(route_name='contact', request_method='DELETE',
             accept='application/json', renderer='json')
 def delete_contact(request):
     object_id = ObjectId(request.matchdict['id'])
-    query = {'_id': object_id}
-    contact = request.db['contacts'].find_one(query)
+    contact = request.db['contacts'].find_one(object_id)
+    print contact
     if contact is None:
-        return HTTPNotFound()
+        return status_code_response(404)
     request.db['contacts'].remove(object_id)
-    return HTTPOk()
+    return status_code_response(200)
+    
+def status_code_response(status_int):
+    response = Response()
+    response.status_int = status_int
+    response.content_type = 'application/json; charset=UTF-8'
+    response.body = ''
+    return response
+
