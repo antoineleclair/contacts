@@ -1,27 +1,51 @@
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPOk
+import json
+from bson.objectid import ObjectId
 
 @view_config(route_name='contacts', request_method='GET',
             accept='application/json', renderer='json')
 def list_contacts(request):
-    pass
+    contacts = request.db['contacts'].find()
+    return contacts
     
 @view_config(route_name='contacts', request_method='POST',
             accept='application/json', renderer='json')
 def add_contacts(request):
-    pass
+    contact = json.loads(request.body)
+    request.db['contacts'].insert(contact)
+    response = HTTPOk()
+    response.headers['Location'] = '/contacts/%s' % contact.id
+    return response
 
 @view_config(route_name='contact', request_method='GET',
             accept='application/json', renderer='json')
 def get_contact(request):
-    pass
+    query = {'_id': ObjectId(request.matchdict['id'])}
+    contact = request.db['contacts'].find_one(query)
+    if contact is None:
+        return HTTPNotFound()
+    return contact
 
 @view_config(route_name='contacts', request_method='PUT',
             accept='application/json', renderer='json')
 def update_contact(request):
-    pass
-
+    query = {'_id': ObjectId(request.matchdict['id'])}
+    contact = request.db['contacts'].find_one(query)
+    if contact is None:
+        return HTTPNotFound()
+    update = json.loads(request.body)
+    for key in update: contact[key] = update[key]
+    request.db['contacts'].update(contact)
+    return HTTPOk()
+    
 @view_config(route_name='contact', request_method='DELETE',
             accept='application/json', renderer='json')
 def delete_contact(request):
-    pass
-
+    object_id = ObjectId(request.matchdict['id'])
+    query = {'_id': object_id}
+    contact = request.db['contacts'].find_one(query)
+    if contact is None:
+        return HTTPNotFound()
+    request.db['contacts'].remove(object_id)
+    return HTTPOk()
