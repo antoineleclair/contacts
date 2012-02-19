@@ -29,7 +29,7 @@
             </div>
             <div class="form-actions">
                 <input type="submit" value="Save" class="btn btn-primary">            
-                <a href="#">Cancel</a>
+                <a href="#" class="btn">Cancel</a>
             </div>
         </form>
     </script>
