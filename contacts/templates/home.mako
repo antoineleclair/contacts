@@ -7,7 +7,7 @@
 <p>Blah blah blah</p>
 
 <%text>
-    <script type="text/template" id="contact-short">
+    <script type="text/template" id="contact-list-item">
         <div class="name"><%= user.get('name') %></div>
         <div class="email"><%= user.get('email') %></div>
         <span class="destroy"></span>
