@@ -18,11 +18,9 @@ def list_contacts(request):
 def add_contacts(request):
     contact = request.json_body
     request.db['contacts'].insert(contact)
-    print contact
-    response = status_code_response(200)
-    response.headers['Location'] = route_url('contact',
-                                    id=contact['_id'], request=request)
-    return response
+    contact['id'] = str(contact['_id'])
+    del contact['_id']
+    return contact
 
 @view_config(route_name='contact', request_method='GET',
             accept='application/json', renderer='json')
