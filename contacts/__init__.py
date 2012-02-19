@@ -28,5 +28,5 @@ def add_routes(config):
     
     # API
     config.add_route('contacts', '/contacts')
-    config.add_route('contact', '/contact/{id}')    
+    config.add_route('contact', '/contact/{id}')
 

@@ -8,6 +8,9 @@ from bson.objectid import ObjectId
             accept='application/json', renderer='json')
 def list_contacts(request):
     contacts = request.db['contacts'].find()
+    for contact in contacts:
+        contact['id'] = str(contact['_id'])
+        del contact['_id']
     return contacts
     
 @view_config(route_name='contacts', request_method='POST',
@@ -28,6 +31,8 @@ def get_contact(request):
     contact = request.db['contacts'].find_one(query)
     if contact is None:
         return status_code_response(404)
+    contact['id'] = str(contact['_id'])
+    del contact['_id']
     return contact
 
 @view_config(route_name='contacts', request_method='PUT',
