@@ -1,73 +1,88 @@
-$(function(){
-window.Contact = Backbone.Model.extend({
-    defaults: { name: '', email: '' },
-    url: '/contacts'
-});
+$(function() {
 
-window.ContactList = Backbone.Collection.extend({
-    model: Contact,
+var App = {
+    Views: {},
+    Routers: {},
+    Collections: {},
+    Models: {},
+    init: function() {
+        new App.Routers.Contacts();
+        Backbone.history.start({pushState: true});
+    }
+};
 
-    comparator: function(contact) {
-        return todo.get('name');
+App.Models.Contact = Backbone.Model.extend({
+    url: function() {
+        if (this.isNew()) return '/contacts';
+        return '/contacts/' + this.get('id');
+    },
+    
+    defaults: {
+        name: '',
+        email: ''
     }
 });
 
-window.ContactListViewItem = Backbone.View.extend({
-    tagName: 'li',
+App.Collections.Contacts = Backbone.Collection.extend({
+    url: '/contacts',
+    model: App.Models.Contact,
+});
 
-    template: _.template($('#tmpl-contact-list-item').html()),
+App.Routers.Contacts = Backbone.Router.extend({
+    routes: {
+        '': 'index',
+        //'contact/:id': 'show'
+    },
+    
+    index: function() {
+        var contacts = new App.Collections.Contacts();
+        contacts.fetch({
+            success: function() {
+                new App.Views.Contacts.Index({ collection: contacts });
+            },
+            error: function() {
+                new Error({ message: "Error loading contacts." });
+            }
+        });
+    }
+});
 
-    model: Contact,
+App.Views.Contacts = {};
 
+App.Views.Contacts.Index = Backbone.View.extend({
+    initialize: function() {
+        this.render();
+    },
+    
     render: function() {
-        $(this.el).html(this.template({ user: this.model }));
-        return this;
-    },
-
-    // @todo : events
-});
-
-window.AppView = Backbone.View.extend({
-    $el: $('#tmpl-contact-app'),
-
-    initialize: function() {
-        var contact_form = new ContactFormView({
-            model: new Contact(),
-            el : $('#contact-wrap')
-        });
-
-        contact_form.render();
+        var out;
+        if (this.collection.models.length > 0) {
+            out = '<h3>Contacts</h3>';
+            out += '<ul>';
+            this.collection.each(function(item) {
+                var el = new App.Views.Contacts.Single({model: item})
+                            .render().el;
+                out += $(el).html();
+            });
+            out += '</ul>';
+        } else {
+            out = '<h3>No contact yet</h3>'
+        }
+        $(this.el).html(out);
+        $('#app').html(this.el);
     }
 });
 
-window.ContactFormView = Backbone.View.extend({
-    template: _.template($('#tmpl-contact-form').html()),
-
-    events: { 'submit':  'save' },
-
-    render: function(){
-        var html = this.template({ user: this.model });
-        $(this.el).html(html);
-
-        this.inputs = {
-            name: this.$el.find('[name=name]'),
-            email: this.$el.find('[name=email]')
-        };
-
+App.Views.Contacts.Single = Backbone.View.extend({
+    model: App.Models.Contact,
+    template: _.template($('#tmpl-contact-list-item').html()),
+    render: function() {
+        $(this.el).html(this.template({ contact: this.model }));
         return this;
-    },
-
-    save: function(e) {
-        e.preventDefault();
-        this.model.save({
-            name: this.inputs.name.val(),
-            email: this.inputs.email.val()
-        });
-    },
-
-
-    initialize: function() {
     }
 });
-window.App = new AppView();
+
+App.init();
+
 });
+

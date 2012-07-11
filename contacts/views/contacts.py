@@ -3,19 +3,24 @@ from pyramid.response import Response
 from pyramid.url import route_url
 from bson.objectid import ObjectId
 
+import logging
+logger = logging.getLogger(__name__)
 
 @view_config(route_name='contacts', request_method='GET',
             accept='application/json', renderer='json')
 def list_contacts(request):
+    logger.debug('Request for contact list received.')
     contacts = request.db['contacts'].find()
-    for contact in contacts:
-        contact['id'] = str(contact['_id'])
-        del contact['_id']
-    return contacts
+    return [{
+            'id': str(contact['_id']),
+            'name': contact['name'],
+            'email': contact['email'],   
+        } for contact in contacts]
     
 @view_config(route_name='contacts', request_method='POST',
             accept='application/json', renderer='json')
 def add_contacts(request):
+    logger.debug('Request to add contact received.')
     contact = request.json_body
     request.db['contacts'].insert(contact)
     contact['id'] = str(contact['_id'])
@@ -25,6 +30,8 @@ def add_contacts(request):
 @view_config(route_name='contact', request_method='GET',
             accept='application/json', renderer='json')
 def get_contact(request):
+    logger.debug('Request to get contact %d received.' \
+        % request.matchdict['id'])
     query = {'_id': ObjectId(request.matchdict['id'])}
     contact = request.db['contacts'].find_one(query)
     if contact is None:
@@ -36,6 +43,8 @@ def get_contact(request):
 @view_config(route_name='contacts', request_method='PUT',
             accept='application/json', renderer='json')
 def update_contact(request):
+    logger.debug('Request to update contact %d received.' \
+        % request.matchdict['id'])
     query = {'_id': ObjectId(request.matchdict['id'])}
     contact = request.db['contacts'].find_one(query)
     if contact is None:
@@ -48,6 +57,8 @@ def update_contact(request):
 @view_config(route_name='contact', request_method='DELETE',
             accept='application/json', renderer='json')
 def delete_contact(request):
+    logger.debug('Request to get delete %d received.' \
+        % request.matchdict['id'])
     object_id = ObjectId(request.matchdict['id'])
     contact = request.db['contacts'].find_one(object_id)
     if contact is None:

@@ -1,16 +1,17 @@
 <%inherit file="/base.mako"/>
 
 <div class="page-header">
-    <h1>Contacts</h1>
+    <h1>Contacts App</h1>
 </div>
 
-<div id="contact-wrap"></div>
+<div id="app"></div>
 
 <%text>
     <script type="text/template" id="tmpl-contact-list-item">
-        <div class="name"><%= user.get('name') %></div>
-        <div class="email"><%= user.get('email') %></div>
-        <span class="destroy"></span>
+        <li>
+            <div class="name"><%= contact.get('name') %></div>
+            <div class="email"><%= contact.get('email') %></div>
+        </li>
     </script>
 
     <script type="text/template" id="tmpl-contact-form">
