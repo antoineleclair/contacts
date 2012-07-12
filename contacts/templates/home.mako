@@ -10,6 +10,7 @@
     <script type="text/template" id="tmpl-contact-list-item">
         <div class="name"><%= contact.get('name') %></div>
         <div class="email"><%= contact.get('email') %></div>
+        <a href="#" class="remove"><i class="icon-remove"></i></a>
     </script>
 
     <script type="text/template" id="tmpl-contact-form">

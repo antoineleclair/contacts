@@ -30,7 +30,7 @@ def add_contacts(request):
 @view_config(route_name='contact', request_method='GET',
             accept='application/json', renderer='json')
 def get_contact(request):
-    logger.debug('Request to get contact %d received.' \
+    logger.debug('Request to get contact %s received.' \
         % request.matchdict['id'])
     query = {'_id': ObjectId(request.matchdict['id'])}
     contact = request.db['contacts'].find_one(query)
@@ -43,7 +43,7 @@ def get_contact(request):
 @view_config(route_name='contacts', request_method='PUT',
             accept='application/json', renderer='json')
 def update_contact(request):
-    logger.debug('Request to update contact %d received.' \
+    logger.debug('Request to update contact %s received.' \
         % request.matchdict['id'])
     query = {'_id': ObjectId(request.matchdict['id'])}
     contact = request.db['contacts'].find_one(query)
@@ -57,7 +57,7 @@ def update_contact(request):
 @view_config(route_name='contact', request_method='DELETE',
             accept='application/json', renderer='json')
 def delete_contact(request):
-    logger.debug('Request to get delete %d received.' \
+    logger.debug('Request to get delete %s received.' \
         % request.matchdict['id'])
     object_id = ObjectId(request.matchdict['id'])
     contact = request.db['contacts'].find_one(object_id)

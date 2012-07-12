@@ -1,6 +1,6 @@
 $(function() {
 
-var App = {
+window.App = {
     Views: {},
     Routers: {},
     Collections: {},
@@ -15,7 +15,7 @@ var App = {
 App.Models.Contact = Backbone.Model.extend({
     url: function() {
         if (this.isNew()) return '/contacts';
-        return '/contacts/' + this.get('id');
+        return '/contact/' + this.get('id');
     },
     
     defaults: {
@@ -81,13 +81,25 @@ App.Views.Contacts.Index = Backbone.View.extend({
 });
 
 App.Views.Contacts.Single = Backbone.View.extend({
+    events: {
+        'click': "remove",
+    },
+    el: 'li',
     model: App.Models.Contact,
     template: _.template($('#tmpl-contact-list-item').html()),
     render: function() {
-        this.el = $('<li class="span3"/>')[0];
+        this.el = $('<li class="span3"/>').attr('data-id', this.model.id)[0];
         $(this.el).html(this.template({ contact: this.model }));
         return this;
-    }
+    },
+    remove: function() {
+        //App.Data.Contacts.remove(this.model.id);
+        var self = this;
+        this.model.destroy({success: function(){
+            $(self.el).fadeOut(function() {$(this).remove();});
+        }});
+        return false;
+    },
 });
 
 App.Views.Contacts.Form = Backbone.View.extend({
