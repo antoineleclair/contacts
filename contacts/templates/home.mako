@@ -8,10 +8,8 @@
 
 <%text>
     <script type="text/template" id="tmpl-contact-list-item">
-        <li>
-            <div class="name"><%= contact.get('name') %></div>
-            <div class="email"><%= contact.get('email') %></div>
-        </li>
+        <div class="name"><%= contact.get('name') %></div>
+        <div class="email"><%= contact.get('email') %></div>
     </script>
 
     <script type="text/template" id="tmpl-contact-form">

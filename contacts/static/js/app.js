@@ -72,9 +72,7 @@ App.Views.Contacts.Index = Backbone.View.extend({
         var el = new App.Views.Contacts.Single({
             model: contact
         }).render().el;
-        var $el = $(el).hide();
-        $('#contact-list').prepend($el);
-        $el.slideDown();
+        $('#contact-list').prepend(el);
     },
     initialize: function() {
         this.render();
@@ -86,6 +84,7 @@ App.Views.Contacts.Single = Backbone.View.extend({
     model: App.Models.Contact,
     template: _.template($('#tmpl-contact-list-item').html()),
     render: function() {
+        this.el = $('<li class="span3"/>')[0];
         $(this.el).html(this.template({ contact: this.model }));
         return this;
     }
