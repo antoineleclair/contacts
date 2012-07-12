@@ -19,13 +19,13 @@
             <div class="control-group">
                 <label class="control-label" for="contact-name">Name</label>
                 <div class="controls">
-                    <input type="text" name="name" value="<%= user.get('name') %>" id="contact_name">
+                    <input type="text" name="name" value="<%= contact.get('name') %>" id="contact_name">
                 </div>
             </div>
             <div class="control-group">
                 <label class="control-label" for="contact-email">Email</label>
                 <div class="controls">
-                    <input type="email" name="email" value="<%= user.get('email') %>">
+                    <input type="email" name="email" value="<%= contact.get('email') %>">
                 </div>
             </div>
             <div class="form-actions">

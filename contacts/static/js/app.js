@@ -4,6 +4,7 @@ var App = {
     Views: {},
     Routers: {},
     Collections: {},
+    Data: {},
     Models: {},
     init: function() {
         new App.Routers.Contacts();
@@ -26,6 +27,9 @@ App.Models.Contact = Backbone.Model.extend({
 App.Collections.Contacts = Backbone.Collection.extend({
     url: '/contacts',
     model: App.Models.Contact,
+    initialize: function() {
+        
+    }
 });
 
 App.Routers.Contacts = Backbone.Router.extend({
@@ -35,10 +39,11 @@ App.Routers.Contacts = Backbone.Router.extend({
     },
     
     index: function() {
-        var contacts = new App.Collections.Contacts();
-        contacts.fetch({
+        App.Data.Contacts = new App.Collections.Contacts();
+        App.Data.Contacts.fetch({
             success: function() {
-                new App.Views.Contacts.Index({ collection: contacts });
+                new App.Views.Contacts.Index({ collection: App.Data.Contacts });
+                new App.Views.Contacts.Form({ model: new App.Models.Contact() });
             },
             error: function() {
                 new Error({ message: "Error loading contacts." });
@@ -50,27 +55,31 @@ App.Routers.Contacts = Backbone.Router.extend({
 App.Views.Contacts = {};
 
 App.Views.Contacts.Index = Backbone.View.extend({
+    el: 'ul',
     initialize: function() {
         this.render();
     },
     
     render: function() {
-        var out;
-        if (this.collection.models.length > 0) {
-            out = '<h3>Contacts</h3>';
-            out += '<ul>';
-            this.collection.each(function(item) {
-                var el = new App.Views.Contacts.Single({model: item})
-                            .render().el;
-                out += $(el).html();
-            });
-            out += '</ul>';
-        } else {
-            out = '<h3>No contact yet</h3>'
-        }
-        $(this.el).html(out);
+        this.el = $('<ul id="contact-list"/>');
         $('#app').html(this.el);
-    }
+        var self = this;
+        this.collection.each(function(item) {
+            self.prependContact(item);
+        });
+    },
+    prependContact: function(contact) {
+        var el = new App.Views.Contacts.Single({
+            model: contact
+        }).render().el;
+        var $el = $(el).hide();
+        $('#contact-list').prepend($el);
+        $el.slideDown();
+    },
+    initialize: function() {
+        this.render();
+        this.collection.on('add', this.prependContact, this);
+    },
 });
 
 App.Views.Contacts.Single = Backbone.View.extend({
@@ -81,6 +90,47 @@ App.Views.Contacts.Single = Backbone.View.extend({
         return this;
     }
 });
+
+App.Views.Contacts.Form = Backbone.View.extend({
+    template: _.template($('#tmpl-contact-form').html()),
+
+    events: { 'submit':  'save' },
+
+    render: function(){
+        var html = this.template({ contact: this.model });
+        $(this.el).html(html);
+
+        this.inputs = {
+            name: this.$el.find('[name=name]'),
+            email: this.$el.find('[name=email]')
+        };
+
+        return this;
+    },
+
+    save: function(e) {
+        e.preventDefault();
+        var self = this;
+        this.model.save({
+            name: this.inputs.name.val(),
+            email: this.inputs.email.val()
+        }, {
+            success: function(model, response) {
+                App.Data.Contacts.add(model);
+                self.inputs.name.val('');
+                self.inputs.email.val('');
+            },
+            error: function(model, response) {
+                new Error({message: 'Error saving contact.'});
+            }
+        });
+    },
+
+    initialize: function() {
+        $('#app').prepend(this.render().el);
+    }
+});
+
 
 App.init();
 
