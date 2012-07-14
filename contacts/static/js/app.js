@@ -82,18 +82,17 @@ App.Views.Contacts.Index = Backbone.View.extend({
 
 App.Views.Contacts.Single = Backbone.View.extend({
     events: {
-        'click': "remove",
+        'click .remove': "remove",
     },
-    el: 'li',
     model: App.Models.Contact,
     template: _.template($('#tmpl-contact-list-item').html()),
     render: function() {
-        this.el = $('<li class="span3"/>').attr('data-id', this.model.id)[0];
-        $(this.el).html(this.template({ contact: this.model }));
+        var el = $('<li class="span3"/>').attr('data-id', this.model.get('id'));
+        el.html(this.template({ contact: this.model }));
+        $(this.el).html(el);
         return this;
     },
     remove: function() {
-        //App.Data.Contacts.remove(this.model.id);
         var self = this;
         this.model.destroy({success: function(){
             $(self.el).fadeOut(function() {$(this).remove();});
@@ -130,6 +129,7 @@ App.Views.Contacts.Form = Backbone.View.extend({
                 App.Data.Contacts.add(model);
                 self.inputs.name.val('');
                 self.inputs.email.val('');
+                self.model = new App.Models.Contact();
             },
             error: function(model, response) {
                 new Error({message: 'Error saving contact.'});
